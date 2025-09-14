@@ -163,8 +163,25 @@ async def update_resume(lead_id: str, resume: UploadFile = File(...), db: Sessio
     lead.resume_filename = resume.filename
     file_data = await resume.read()
     lead.resume_date = file_data
+    first_name = lead.first_name
+    last_name = lead.last_name
+    email = lead.email
     db.commit()
     db.refresh(lead)
+   
+# Send email to prospect
+    send_email(
+        to=email,
+        subject="Thank you for your resume updating!",
+        body=f"Dear {first_name},\n\nThank you for updating your resume. We will contact you soon.\n"
+    )
+
+    # Send email to attorney
+    send_email(
+        to=ATTORNEY_EMAIL,
+        subject="existing resume updated",
+        body=f"resume updated from {first_name} {last_name} ({email})"
+    )
     return LeadOut.from_orm(lead)
 
 # Internal API: Update lead state (auth required)
