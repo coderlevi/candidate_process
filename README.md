@@ -3,7 +3,7 @@ demo of processing job candidate
 
 how to run it:
 1. create python 3.11 envrionment switch to this python envionment
-2. git clone this repo
+2. git clone https://github.com/coderlevi/candidate_process.git
 3. cd candidate_process
 4. pip install -r requirements.txt
 5. uvicorn main:app --host 0.0.0.0 --port 8000 --reload
