@@ -7,14 +7,41 @@ Email sending logic to notify both the prospect and the attorney when a lead is 
 Protected Internal API for attorneys to view and update leads:
 GET /leads
 List all leads
-GET /leads/{id}
+POST /leads
+create a new lead
+GET /leads/{lead_id}
 Get specific lead details
-PUT /leads/{id}/resume
+PUT /leads/{lead_id}/resume
 Update lead resume, and change the state to PENDING
-GET /leads/{id}/resume
+GET /leads/{lead_id}/resume
 Get lead resume
-PUT /leads/{id}/state
+PUT /leads/{lead_id}/state
 Update lead state (PENDING or REACHED_OUT)
 Authentication for internal APIs (simple API Key-based auth for demonstration).
 Persistent storage: Using SQLite (via SQLAlchemy ORM).
 Resume upload: Storing uploaded file contents in the database as BLOB (for simplicity). In production, we can store the file in Azure blob.
+
+table schema:
+
+leads table:
+    id = Column(String, primary_key=True, index=True) # id is a uuid value computed from email
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    resume_filename = Column(String, nullable=False)
+    resume_data = Column(LargeBinary, nullable=False)
+    state = Column(Enum(LeadState), default=LeadState.PENDING)
+
+POST /leads payload:
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    email: EmailStr = Form(...),
+    resume: UploadFile = File(...)
+
+PUT /leads/{lead_id}/resume payload:
+    resume: UploadFile = File(...)
+
+PUT /leads/{lead_id}/state payload:
+    {'state': "PENDING"}
+
+
